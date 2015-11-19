@@ -39,7 +39,7 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
               :password "pwd"})
 ```
 
-;; Database DDL
+### Database DDL
 ; Create database table
 ```clojure
 (defupdate create-test-table []
@@ -58,7 +58,7 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
   (drop-test-table (:connection db-conn)))
 ```
 
-;; Database DML
+### Database DML
 
 ; Insert Data
 ```clojure
