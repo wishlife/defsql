@@ -25,8 +25,10 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
 
 ### Prepare database connection
 
-(require '[defsql.core :refer [defquery]])
+```clojure
+(require '[defsql.core :refer [defquery defupdate definsert]])
 (require '[clojure.java.jdbc :as jdbc])
+```
 
 ;; Define a database connection spec.
 ```clojure
@@ -37,16 +39,60 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
               :password "pwd"})
 ```
 
-;; Define query
+;; Database DDL
+; Create database table
 ```clojure
-(defquery users-by-country [country]
-  "SELECT * FROM demo_user WHERE country = :country")
+(defupdate create-test-table []
+  "create table demo_test (id bigserial not null, name text not null, country text)")
+
+(jdbc/with-db-connection [db-conn db-spec]
+  (create-test-table (:connection db-conn)))
 ```
 
-;; Execute query
+; Drop database table
+```clojure
+(defupdate drop-test-table []
+  "drop table demo_test")
+
+(jdbc/with-db-connection [db-conn db-spec]
+  (drop-test-table (:connection db-conn)))
+```
+
+;; Database DML
+
+; Insert Data
+```clojure
+(definsert insert-test-data []
+  "insert into demo_test (name, country) values
+   ('John', 'US'),
+   ('Charlie', 'US'),
+   ('Albert', 'UK'),
+   ('Bob', null),
+   ('Lin', 'CHN')")
+
+(jdbc/with-db-connection [db-conn db-spec]
+  (insert-test-data (:connection db-conn)))
+```
+
+; Define query
+```clojure
+(defquery users-by-country [country]
+  "SELECT * FROM demo_test WHERE country = :country")
+```
+
+; Execute query
 ```clojure
 (jdbc/with-db-connection [db-conn db-spec]
   (users-by-country (:connection db-conn) "US"))
+```
+
+; Update
+```clojure
+(defupdate update-test-data [name country]
+  "update demo_test set country = :country where name = :name")
+
+(jdbc/with-db-connection [db-conn db-spec]
+  (update-test-data (:connection db-conn) "John" "UK"))
 ```
 
 ## License
