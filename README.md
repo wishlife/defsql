@@ -22,6 +22,12 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
 
     Use for database connection and transaction management.
 
+#### Cheshire
+
+    [cheshire "5.5.0"]
+
+    When json type is used.
+
 
 ### Prepare database connection
 
