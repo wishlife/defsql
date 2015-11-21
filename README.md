@@ -101,6 +101,27 @@ Add this to your [Leiningen](https://github.com/technomancy/leiningen) :dependen
   (update-test-data (:connection db-conn) "John" "UK"))
 ```
 
+### Testing
+
+defsql.defsql-check/defsql-tests can generate test cases for all SQL statement automatically.
+
+```clojure
+(ns sandbox-defsql.core-test
+  (:require [clojure.test :refer :all]
+            [sandbox-defsql.core :refer :all]
+            [defsql.defsql-check :refer [defsql-tests]]
+            [clojure.java.jdbc :as jdbc]))
+
+(defn- open-test-connection []
+  (jdbc/get-connection db-spec))
+
+;; defsql-tests will create test cases for all SQL statement, test
+;; cases will run using database connection provided by
+;; open-test-connection function
+(defsql-tests open-test-connection sandbox-defsql.core)
+
+```
+
 ## License
 
 Copyright © 2015 Wishlife Inc.
