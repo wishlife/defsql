@@ -351,16 +351,26 @@
    (if (.next rs)
      (rowfn rs))))
 
+(defn read-single-row-helper
+  [^java.sql.ResultSet rs rowfn handle-no-result]
+  (if-not (.next rs)
+    (handle-no-result)
+    (let [result (rowfn rs)]
+      (if (.next rs)
+        (throw (java.sql.SQLException. "non-unique result"))
+        result))))
+
 (defn read-single-row
   ([^java.sql.ResultSet rs]
    (read-single-row rs (partial row-to-map (column-labels rs))))
   ([^java.sql.ResultSet rs rowfn]
-   (if-not (.next rs)
-     (throw (java.sql.SQLException. "no result"))
-     (let [result (rowfn rs)]
-       (if (.next rs)
-         (throw (java.sql.SQLException. "non-unique result"))
-         result)))))
+   (read-single-row-helper rs rowfn (fn [] (throw (java.sql.SQLException. "no result"))))))
+
+(defn read-optional-single-row
+  ([^java.sql.ResultSet rs]
+   (read-optional-single-row rs (partial row-to-map (column-labels rs))))
+  ([^java.sql.ResultSet rs rowfn]
+   (read-single-row-helper rs rowfn (fn [] nil))))
 
 ;; TODO:
 ;; - Add support for user provided row-mapper, e.g.,
@@ -397,6 +407,7 @@
         reader (case (:rows opts)
                  :first `read-first-row
                  :single `read-single-row
+                 :optional-single `read-optional-single-row
                  nil `read-rows)]
     `(with-open [ps# (.prepareStatement ~c ~bindsql)
                  ~rs (.executeQuery
@@ -405,6 +416,7 @@
                         ~@(case (:rows opts)
                             :first [(list '.setMaxRows 1)]
                             :single [(list '.setMaxRows 2)]
+                            :optional-single [(list '.setMaxRows 2)]
                             nil)))]
        ~(cond
           (:row opts)
@@ -617,7 +629,11 @@
 
   When {:rows :single} is present, the ResultSet is expected to have
   exactly 1 result.  An exception will be thrown if 0 or 2+ results
-  are returned.  Otherwise the single row is returned."
+  are returned.  Otherwise the single row is returned.
+
+  When {:rows :optional-single} is present, the ResultSet is expected
+  to have 0 or 1 results.  An exception will be thrown if 2+ results
+  are returned.  Otherwise the single row or nil is returned."
   [name & decl]
   (defsql* name decl execute-query))
 
