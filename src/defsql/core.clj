@@ -101,7 +101,7 @@
 
 (defn set-nullable-boolean*
   [^java.sql.PreparedStatement ps ^Integer idx ^Boolean b]
-  (if b
+  (if-not (nil? b)
     (.setBoolean ps idx b)
     (.setNull ps idx java.sql.Types/BOOLEAN)))
 
