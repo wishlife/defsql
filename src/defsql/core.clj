@@ -281,7 +281,7 @@
 ;; TODO: special values in ResultSet
 ;; - (.getRow rs) = current row number
 
-(defn- column-labels
+(defn column-labels
   "Extracts the column labels from a result set to be used as keys in
   row maps.  This function pairs with the row-to-map."
   [^java.sql.ResultSet rs]
@@ -308,7 +308,7 @@
                  (inc i)))
         (persistent! labels)))))
 
-(defn- row-to-map
+(defn row-to-map
   "Converts a row to a map, using the labels vector for keys."
   [labels ^java.sql.ResultSet rs]
   (let [column-count (count labels)]
