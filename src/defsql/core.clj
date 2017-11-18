@@ -432,9 +432,8 @@
                                 ~@(bind-parameters bindorder pmeta opts))))
        (with-open [rs# (.getGeneratedKeys ps#)]
          (read-first-row rs#)))))
-     
 
-(defn- prepare-and-execute
+(defn prepare-and-execute
   "This method recursively iterates through the params list, setting
   up each parameter as needed.  Once params is empty, this method then
   prepares and executes the SQL using the provided executor fn.
@@ -483,6 +482,12 @@
                     (:tag m))]
     (assoc m :tag tag)
     m))
+
+(defn unwrap-connection
+  [c]
+  (if (map? c)
+    (:connection c)
+    c))
 
 (defn- defsql*
   "Workhorse of defsql macros, converts a SQL spec + an executor into
@@ -547,7 +552,7 @@
          ~@(when check-args ;; TODO: make this a :pre condition
             `(if-not (instance? java.sql.Connection ~c)
                (throw (IllegalArgumentException. (str "invalid connection: " (pr-str ~c))))))
-         ~(prepare-and-execute params bindorder bindsql pmeta c opts executor)))))
+         ~(prepare-and-execute params bindorder bindsql pmeta `(unwrap-connection ~c) opts executor)))))
 
 
 (defmacro defquery
