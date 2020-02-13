@@ -1,4 +1,4 @@
-(defproject defsql "0.1.8-SNAPSHOT"
+(defproject defsql "0.2.0"
   :description "A Clojure library designed to make your life easier with SQL Database using JDBC."
   :url "https://github.com/wishlife/defsql"
   :license {:name "Eclipse Public License"
