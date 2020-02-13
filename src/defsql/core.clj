@@ -294,11 +294,11 @@
            i 1]
       (if (<= i column-count)
         (let [label (-> (.getColumnLabel md i)
-                        (clojure.string/lower-case))
-              ;; if we wanted to be consistent with clojure naming
-              ;; conventions, we might consider converting '_' to '-',
-              ;; as in user_name becomes user-name.
-              ;;        (.replace \_ \-))
+                        (clojure.string/lower-case)
+                        ;; if we wanted to be consistent with clojure naming
+                        ;; conventions, we might consider converting '_' to '-',
+                        ;; as in user_name becomes user-name.
+                        (.replace \_ \-))
               count (inc (get counts label 0))]
           (recur (conj! labels
                         (keyword (if (= 1 count)
